@@ -516,13 +516,13 @@
 
   <script>
     document.getElementById('resetBtn').addEventListener('click', () => {
-      if (confirm('⚠️ Are you sure you want to reset all settings to default?')) {
+      if (confirm('⚠️ Are you sure you want to reset all data?')) {
         localStorage.removeItem('tabCloak');
         localStorage.removeItem('particles');
         localStorage.removeItem('tips');
         localStorage.removeItem('siteTheme');
         localStorage.removeItem('visited');
-        showToast('Settings reset to default!');
+        showToast('data reset!');
         setTimeout(() => location.reload(), 1000);
       }
     });
