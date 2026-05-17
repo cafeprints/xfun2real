@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xfun2 - More</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script>
+    const _themes = {
+      purple: { a: '#a855f7', b: '#38bdf8', glow1: '120,0,255',  glow2: '0,170,255' },
+      red:    { a: '#ef4444', b: '#f97316', glow1: '239,68,68',   glow2: '249,115,22' },
+      green:  { a: '#22c55e', b: '#06b6d4', glow1: '34,197,94',   glow2: '6,182,212' },
+      pink:   { a: '#ec4899', b: '#a855f7', glow1: '236,72,153',  glow2: '168,85,247' },
+      yellow: { a: '#eab308', b: '#f97316', glow1: '234,179,8',   glow2: '249,115,22' },
+      blue:   { a: '#3b82f6', b: '#06b6d4', glow1: '59,130,246',  glow2: '6,182,212' },
+      rose:   { a: '#f43f5e', b: '#ec4899', glow1: '244,63,94',   glow2: '236,72,153' },
+      lime:   { a: '#84cc16', b: '#22c55e', glow1: '132,204,22',  glow2: '34,197,94' },
+      indigo: { a: '#6366f1', b: '#8b5cf6', glow1: '99,102,241',  glow2: '139,92,246' },
+      amber:  { a: '#f59e0b', b: '#ef4444', glow1: '245,158,11',  glow2: '239,68,68' },
+      teal:   { a: '#14b8a6', b: '#3b82f6', glow1: '20,184,166',  glow2: '59,130,246' },
+      white:  { a: '#ffffff', b: '#cbd5e1', glow1: '200,200,220', glow2: '150,180,220' },
+    };
+    const _t = _themes[localStorage.getItem('siteTheme') || 'purple'];
+    if (_t) {
+      const r = document.documentElement.style;
+      r.setProperty('--clr-a', _t.a);
+      r.setProperty('--clr-b', _t.b);
+      r.setProperty('--glow1', _t.glow1);
+      r.setProperty('--glow2', _t.glow2);
+      window._themeA   = _t.a;
+      window._themeRGB = _t.glow1;
+    }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: transparent;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      padding: 140px 20px 40px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 900;
+      letter-spacing: -3px;
+      color: #ffffff;
+      text-shadow:
+        0 0 10px rgba(var(--glow1, 168,85,247),0.9),
+        0 0 25px rgba(var(--glow1, 168,85,247),0.6),
+        0 0 40px rgba(var(--glow2, 56,189,248),0.4);
+      position: relative;
+      display: inline-block;
+      animation: floatTitle 3.5s ease-in-out infinite;
+    }
+
+    header h1::before {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(circle, rgba(var(--glow1, 168,85,247),0.35), transparent 60%);
+      filter: blur(20px);
+      z-index: -1;
+      border-radius: 999px;
+    }
+
+    @keyframes floatTitle {
+      0%   { transform: translateY(0px); }
+      50%  { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    header p {
+      margin-top: 18px;
+      color: #bdbdbd;
+      font-size: 1.1rem;
+    }
+
+    .container {
+      width: min(1400px, 92%);
+      margin: auto;
+      padding-top: 20px;
+      padding-bottom: 80px;
+    }
+
+    .float-dots {
+      display: inline-block;
+      margin-left: 6px;
+      animation: floatDots 1.6s ease-in-out infinite;
+    }
+
+    @keyframes floatDots {
+      0%   { transform: translateY(0px); opacity: 0.6; }
+      50%  { transform: translateY(-4px); opacity: 1; }
+      100% { transform: translateY(0px); opacity: 0.6; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #888;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    @media (max-width: 700px) {
+      header { padding-top: 120px; }
+    }
+
+    /* ── Nav bar ── */
+    .floatingBar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      padding: 16px 26px;
+      border-radius: 999px;
+      background: rgba(15,15,25,0.55);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(var(--glow1, 168,85,247),0.25);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      width: min(1400px, 96vw);
+    }
+
+    .links {
+      display: flex;
+      gap: 26px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .links a {
+      text-decoration: none;
+      color: #ddd;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 16px;
+      transition: 0.2s ease;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      min-width: unset;
+    }
+
+    .links a .label { font-size: 17px; font-weight: 700; }
+    .links a .icon  { font-size: 20px; line-height: 1; opacity: 0.9; }
+
+    .links a:hover {
+      background: rgba(var(--glow1, 168,85,247),0.2);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .links a.active {
+      background: rgba(var(--glow1, 168,85,247),0.2);
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .pill    { padding: 12px 14px; }
+      .links   { gap: 14px; }
+      .links a { font-size: 12px; padding: 6px 10px; }
+    }
+
+    /* ── Theme toggle ── */
+    #themeToggle {
+      position: fixed;
+      bottom: 18px;
+      left: 18px;
+      z-index: 10000;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #secretTag {
+      position: fixed;
+      bottom: 10px;
+      right: 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+      font-family: monospace;
+      z-index: 9999;
+      user-select: none;
+    }
+
+    body.light-mode header h1 { color: #111; text-shadow: none; }
+    body.light-mode header p  { color: #333; }
+    body.light-mode footer    { color: #444; border-top: 1px solid rgba(0,0,0,0.1); }
+
+    /* ── Ripple ── */
+    .ripple {
+      position: fixed;
+      border-radius: 999px;
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+      border: 2px solid rgba(var(--glow1, 168,85,247),0.6);
+      animation: rippleAnim 0.7s ease-out forwards;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes rippleAnim {
+      0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+      60%  { opacity: 0.4; }
+      100% { transform: translate(-50%, -50%) scale(6); opacity: 0; }
+    }
+
+    /* ── Light preview ── */
+    #lightPreview {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      background: radial-gradient(circle at var(--mx,50vw) var(--my,50vh), rgba(255,255,255,0.9), transparent 25%);
+    }
+
+    body.light-preview #lightPreview { opacity: 1; }
+    body.light-mode #lightPreview    { background: radial-gradient(circle at var(--mx,50vw) var(--my,50vh), rgba(0,0,0,0.85), transparent 25%); }
+
+    /* ── Title letter spans ── */
+    #title span {
+      display: inline-block;
+      transition: transform 0.25s ease;
+      will-change: transform;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav bar -->
+  <div class="floatingBar">
+    <div class="pill">
+      <div class="links">
+        <a href="/">
+          <span class="label">Home</span>
+          <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" d="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19"/></svg></span>
+        </a>
+        <a href="/Xfun2_settings.html">
+          <span class="label">Settings</span>
+          <span class="icon">⚙</span>
+        </a>
+        <a href="/Xfun2_more.html" class="active">
+          <span class="label">More</span>
+          <span class="icon">+</span>
+        </a>
+        <a href="/Xfun2_bookmarklets.html">
+          <span class="label">Bookmarklets</span>
+          <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="0.75em" height="1em" viewBox="0 0 384 512"><path d="M0 0h384v512H0z" fill="none"/><path fill="currentColor" d="M0 512V48C0 21.49 21.49 0 48 0h288c26.51 0 48 21.49 48 48v464L192 400z"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Animated background canvas -->
+  <canvas id="bgCanvas"></canvas>
+  <style>
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: #0d0d0d;
+    }
+  </style>
+
+  <script>
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let w, h;
+    function resize() {
+      w = canvas.width  = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let scrollOffset = 0;
+    window.addEventListener('scroll', () => { scrollOffset = window.scrollY; });
+
+    const mouse = { x: w/2, y: h/2 };
+    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    const dots = Array.from({length: 70}, () => ({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      vx: (Math.random()-0.5)*1.4,
+      vy: (Math.random()-0.5)*1.4,
+      r: Math.random()*3.5 + 2
+    }));
+
+    const scrollFactor = 0.15;
+
+    function draw() {
+      ctx.clearRect(0,0,w,h);
+
+      if (window._particlesOn !== false) {
+        for (let i = 0; i < dots.length; i++) {
+          for (let j = i+1; j < dots.length; j++) {
+            const a = dots[i], b = dots[j];
+            const ax = a.x, ay = a.y - scrollOffset * scrollFactor;
+            const bx = b.x, by = b.y - scrollOffset * scrollFactor;
+            const dx = ax-bx, dy = ay-by;
+            const dist = Math.sqrt(dx*dx+dy*dy);
+            if (dist < 160) {
+              ctx.beginPath();
+              ctx.strokeStyle = 'rgba(' + (window._themeRGB || '168,85,247') + ',' + (1 - dist/160)*0.4 + ')';
+              ctx.lineWidth = 1;
+              ctx.moveTo(ax, ay);
+              ctx.lineTo(bx, by);
+              ctx.stroke();
+            }
+          }
+        }
+
+        for (const d of dots) {
+        const dx = d.x - mouse.x;
+        const dy = (d.y - scrollOffset * scrollFactor) - mouse.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+
+        if (dist < 140 && dist > 0) {
+          const force = (140 - dist) / 140;
+          d.vx += (dx / dist) * force * 0.03;
+          d.vy += (dy / dist) * force * 0.03;
+        }
+
+        d.vx += (Math.random()-0.5) * 0.03;
+        d.vy += (Math.random()-0.5) * 0.03;
+        d.x  += d.vx;
+        d.y  += d.vy;
+        d.vx *= 0.995;
+        d.vy *= 0.995;
+
+        if (d.x < 0 || d.x > w) d.vx *= -1;
+        if (d.y < 0 || d.y > h) d.vy *= -1;
+
+        const dy2    = d.y - scrollOffset * scrollFactor;
+        const time   = performance.now() * 0.002;
+        const spikes = 6;
+        const outer  = d.r + 2;
+        const inner  = d.r * 0.55;
+
+        ctx.save();
+        ctx.translate(d.x, dy2);
+        ctx.rotate(time + (d.vx + d.vy) * 2);
+        ctx.beginPath();
+
+        for (let i = 0; i < spikes*2; i++) {
+          const angle  = (i * Math.PI) / spikes;
+          const radius = i % 2 === 0 ? outer : inner;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+
+        ctx.closePath();
+        ctx.fillStyle = window._themeA || 'rgba(168,85,247,0.95)';
+        ctx.fill();
+        ctx.restore();
+      }
+      } // end particles check
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+
+  <!-- Header -->
+  <header>
+    <h1 id="title">More</h1>
+    <p>Kanawha County School Website UBG</p>
+  </header>
+
+  <script>
+    const title = document.getElementById('title');
+    const text  = title.textContent;
+    title.innerHTML = '';
+
+    const letters = [...text].map((char) => {
+      const s = document.createElement('span');
+      s.textContent = char;
+      title.appendChild(s);
+      return s;
+    });
+
+    title.addEventListener('mousemove', (e) => {
+      const rect     = title.getBoundingClientRect();
+      const x        = e.clientX - rect.left;
+      const strength = 18;
+
+      letters.forEach((el, i) => {
+        const charCenter = (rect.width / letters.length) * i;
+        const diff = charCenter - x;
+        const dist = diff / rect.width;
+        el.style.transform = `translateY(${-Math.abs(dist) * 6}px) translateX(${dist * strength}px)`;
+      });
+    });
+
+    title.addEventListener('mouseleave', () => {
+      letters.forEach(el => { el.style.transform = 'translate(0,0)'; });
+    });
+  </script>
+
+  <main class="container">
+    <div class="settings-list">
+
+      <!-- DMCA -->
+      <div class="setting-card" style="flex-direction:column;align-items:flex-start;">
+        <div class="setting-info" style="margin-bottom:14px;">
+          <h2>⚖️ DMCA</h2>
+          <p>If you believe any content on Xfun2 infringes your copyright, please reach out and we'll address it promptly.</p>
+        </div>
+        <a class="more-btn" href="mailto:zexxdevv@gmail.com?subject=DMCA Takedown Request">📧 Send DMCA Request</a>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="setting-card" style="flex-direction:column;align-items:flex-start;">
+        <div class="setting-info" style="margin-bottom:14px;">
+          <h2>💡 Suggestions</h2>
+          <p>Got an idea for a new proxy, feature, or fix? Send it over and we might add it!</p>
+        </div>
+        <a class="more-btn" href="mailto:zexxdevv@gmail.com?subject=Xfun2 Suggestion">📧 Send a Suggestion</a>
+      </div>
+
+      <!-- Partners -->
+      <div class="setting-card" style="flex-direction:column;align-items:flex-start;">
+        <div class="setting-info" style="margin-bottom:14px;">
+          <h2>🤝 Partners</h2>
+          <p>I currently have no partners — Xfun2 is a solo project! If you're interested in partnering, DM me on TikTok.</p>
+        </div>
+        <a class="more-btn" href="https://www.tiktok.com/@xfunn2" target="_blank">🎵 @xfunn2 on TikTok</a>
+      </div>
+
+      <!-- Credits -->
+      <div class="setting-card" style="flex-direction:column;align-items:flex-start;">
+        <div class="setting-info" style="margin-bottom:14px;">
+          <h2>🛠️ Credits</h2>
+        </div>
+        <ul class="more-list">
+          <li>👨‍💻 <strong>-N8TE</strong> — Creator & Developer</li>
+          <li>🎨 Design inspired by modern proxy hubs</li>
+          <li>🌐 Hosted via <strong>Bunny.net</strong> CDN</li>
+          <li>✨ Particle background built with Canvas API</li>
+          <li>🔤 Font by <strong>Google Fonts</strong> — Inter</li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+
+  <style>
+    .more-btn {
+      display: inline-block;
+      text-decoration: none;
+      background: linear-gradient(90deg, var(--clr-a,#a855f7), var(--clr-b,#38bdf8));
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: 0.2s ease;
+    }
+
+    .more-btn:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    .more-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .more-list li {
+      color: #bbb;
+      font-size: 0.95rem;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(var(--glow1,168,85,247),0.15);
+      border-radius: 10px;
+    }
+  </style>
+
+  <style>
+    #resetBtn {
+      background: rgba(255,60,60,0.15);
+      border: 1px solid rgba(255,60,60,0.4);
+      color: #ff6b6b;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      flex-shrink: 0;
+    }
+    #resetBtn:hover { background: rgba(255,60,60,0.3); }
+  </style>
+
+  <script>
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('⚠️ Are you sure you want to reset all settings to default?')) {
+        localStorage.removeItem('tabCloak');
+        localStorage.removeItem('particles');
+        localStorage.removeItem('tips');
+        localStorage.removeItem('siteTheme');
+        localStorage.removeItem('visited');
+        showToast('Settings reset to default!');
+        setTimeout(() => location.reload(), 1000);
+      }
+    });
+  </script>
+
+  <style>
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .setting-card {
+      background: rgba(10,10,20,0.55);
+      border: 1px solid rgba(var(--glow1, 168,85,247),0.35);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow:
+        0 0 15px rgba(var(--glow1, 168,85,247),0.15),
+        0 0 30px rgba(var(--glow2, 56,189,248),0.08);
+      transition: 0.25s ease;
+    }
+
+    .setting-card:hover {
+      border-color: rgba(var(--glow1, 168,85,247),0.6);
+      box-shadow: 0 15px 40px rgba(var(--glow1, 168,85,247),0.15);
+    }
+
+    .setting-info h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      text-shadow:
+        0 0 8px rgba(168,85,247,0.7),
+        0 0 18px rgba(var(--glow2, 56,189,248),0.4);
+    }
+
+    .setting-info p {
+      color: #c9c9c9;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 56px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      border: 1px solid rgba(var(--glow1, 168,85,247),0.3);
+    }
+
+    .slider::before {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.3s ease;
+    }
+
+    .toggle input:checked + .slider {
+      background: linear-gradient(90deg, var(--clr-a, #a855f7), var(--clr-b, #38bdf8));
+      border-color: transparent;
+    }
+
+    .toggle input:checked + .slider::before {
+      transform: translateX(26px);
+    }
+  </style>
+
+  <script>
+    const cloakToggle = document.getElementById('cloakToggle');
+    cloakToggle.checked = localStorage.getItem('tabCloak') === 'true';
+    cloakToggle.addEventListener('change', () => {
+      localStorage.setItem('tabCloak', cloakToggle.checked);
+      showToast('Tab Cloak ' + (cloakToggle.checked ? 'Enabled' : 'Disabled'));
+    });
+
+    const particlesToggle = document.getElementById('particlesToggle');
+    particlesToggle.checked = localStorage.getItem('particles') !== 'false';
+    particlesToggle.addEventListener('change', () => {
+      localStorage.setItem('particles', particlesToggle.checked);
+      window._particlesOn = particlesToggle.checked;
+      showToast('Particles ' + (particlesToggle.checked ? 'Enabled' : 'Disabled'));
+    });
+
+    // Apply saved particles setting on load
+    const tipsToggle = document.getElementById('tipsToggle');
+    tipsToggle.checked = localStorage.getItem('tips') !== 'false';
+    tipsToggle.addEventListener('change', () => {
+      localStorage.setItem('tips', tipsToggle.checked);
+      showToast('Tips ' + (tipsToggle.checked ? 'Enabled' : 'Disabled'));
+    });
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.classList.add('toast-show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('toast-show');
+        setTimeout(() => toast.remove(), 400);
+      }, 2500);
+    }
+  </script>
+
+  <style>
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      background: rgba(15,15,25,0.85);
+      border: 1px solid rgba(var(--glow1, 168,85,247),0.45);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 14px;
+      box-shadow: 0 0 20px rgba(var(--glow1, 168,85,247),0.25);
+      z-index: 99999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast-show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+
+    .theme-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: linear-gradient(135deg, var(--a), var(--b));
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      opacity: 0.6;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .theme-btn:hover  { opacity: 0.85; transform: translateY(-2px); }
+    .theme-btn.active { opacity: 1; border-color: #fff; transform: translateY(-2px); box-shadow: 0 0 16px rgba(255,255,255,0.2); }
+  </style>
+
+  <footer>© 2026 Xfun2</footer>
+
+  <div id="secretTag">-N8TE</div>
+  <button id="themeToggle">☀️</button>
+
+  <script>
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      document.getElementById('themeToggle').textContent =
+        document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+    });
+  </script>
+
+  <script>
+    const themes = {
+      purple: { a: '#a855f7', b: '#38bdf8', glow1: '120,0,255', glow2: '0,170,255' },
+      red:    { a: '#ef4444', b: '#f97316', glow1: '239,68,68',  glow2: '249,115,22' },
+      green:  { a: '#22c55e', b: '#06b6d4', glow1: '34,197,94',  glow2: '6,182,212' },
+      pink:   { a: '#ec4899', b: '#a855f7', glow1: '236,72,153', glow2: '168,85,247' },
+      yellow: { a: '#eab308', b: '#f97316', glow1: '234,179,8',  glow2: '249,115,22' },
+      blue:   { a: '#3b82f6', b: '#06b6d4', glow1: '59,130,246', glow2: '6,182,212' },
+      rose:   { a: '#f43f5e', b: '#ec4899', glow1: '244,63,94',  glow2: '236,72,153' },
+      lime:   { a: '#84cc16', b: '#22c55e', glow1: '132,204,22', glow2: '34,197,94' },
+      indigo: { a: '#6366f1', b: '#8b5cf6', glow1: '99,102,241', glow2: '139,92,246' },
+      amber:  { a: '#f59e0b', b: '#ef4444', glow1: '245,158,11', glow2: '239,68,68' },
+      teal:   { a: '#14b8a6', b: '#3b82f6', glow1: '20,184,166', glow2: '59,130,246' },
+      white:  { a: '#ffffff', b: '#cbd5e1', glow1: '200,200,220',glow2: '150,180,220' },
+    };
+
+    function applyTheme(name) {
+      const t = themes[name];
+      if (!t) return;
+      const r = document.documentElement.style;
+      r.setProperty('--clr-a', t.a);
+      r.setProperty('--clr-b', t.b);
+      r.setProperty('--glow1', t.glow1);
+      r.setProperty('--glow2', t.glow2);
+
+      window._themeA   = t.a;
+      window._themeRGB = t.glow1;
+
+      // update active button
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === name);
+      });
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('siteTheme') || 'purple';
+    applyTheme(savedTheme);
+
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.theme;
+        localStorage.setItem('siteTheme', name);
+        applyTheme(name);
+        showToast('Theme: ' + btn.textContent);
+      });
+    });
+  </script>
+
+  <script>
+    function spawnRipple(x, y) {
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      const size = Math.random() * 40 + 60;
+      ripple.style.width  = size + 'px';
+      ripple.style.height = size + 'px';
+      ripple.style.left   = x + 'px';
+      ripple.style.top    = y + 'px';
+      document.body.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 800);
+    }
+
+    document.addEventListener('click',      (e) => spawnRipple(e.clientX, e.clientY));
+    document.addEventListener('touchstart', (e) => { const t = e.touches[0]; if (t) spawnRipple(t.clientX, t.clientY); }, { passive: true });
+    document.addEventListener('keydown',    (e) => { if (e.key === ' ' || e.key === 'Enter') spawnRipple(window.innerWidth/2, window.innerHeight/2); });
+  </script>
+
+  <div id="lightPreview"></div>
+
+  <script>
+    const toggleBtn = document.getElementById('themeToggle');
+    const preview   = document.getElementById('lightPreview');
+    let moveHandler = null;
+
+    toggleBtn.addEventListener('mouseenter', () => {
+      document.body.classList.add('light-preview');
+      moveHandler = (e) => {
+        preview.style.setProperty('--mx', e.clientX + 'px');
+        preview.style.setProperty('--my', e.clientY + 'px');
+      };
+      window.addEventListener('mousemove', moveHandler);
+    });
+
+    toggleBtn.addEventListener('mouseleave', () => {
+      document.body.classList.remove('light-preview');
+      if (moveHandler) { window.removeEventListener('mousemove', moveHandler); moveHandler = null; }
+    });
+  </script>
+
+</body>
+</html>

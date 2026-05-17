@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xfun2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script>
+    // Apply saved theme before paint to avoid flash
+    const _themes = {
+      purple: { a: '#a855f7', b: '#38bdf8', glow1: '120,0,255',  glow2: '0,170,255' },
+      red:    { a: '#ef4444', b: '#f97316', glow1: '239,68,68',   glow2: '249,115,22' },
+      green:  { a: '#22c55e', b: '#06b6d4', glow1: '34,197,94',   glow2: '6,182,212' },
+      pink:   { a: '#ec4899', b: '#a855f7', glow1: '236,72,153',  glow2: '168,85,247' },
+      yellow: { a: '#eab308', b: '#f97316', glow1: '234,179,8',   glow2: '249,115,22' },
+      blue:   { a: '#3b82f6', b: '#06b6d4', glow1: '59,130,246',  glow2: '6,182,212' },
+      rose:   { a: '#f43f5e', b: '#ec4899', glow1: '244,63,94',   glow2: '236,72,153' },
+      lime:   { a: '#84cc16', b: '#22c55e', glow1: '132,204,22',  glow2: '34,197,94' },
+      indigo: { a: '#6366f1', b: '#8b5cf6', glow1: '99,102,241',  glow2: '139,92,246' },
+      amber:  { a: '#f59e0b', b: '#ef4444', glow1: '245,158,11',  glow2: '239,68,68' },
+      teal:   { a: '#14b8a6', b: '#3b82f6', glow1: '20,184,166',  glow2: '59,130,246' },
+      white:  { a: '#ffffff', b: '#cbd5e1', glow1: '200,200,220', glow2: '150,180,220' },
+    };
+    const _t = _themes[localStorage.getItem('siteTheme') || 'purple'];
+    if (_t) {
+      const r = document.documentElement.style;
+      r.setProperty('--clr-a', _t.a);
+      r.setProperty('--clr-b', _t.b);
+      r.setProperty('--glow1', _t.glow1);
+      r.setProperty('--glow2', _t.glow2);
+      window._themeA   = _t.a;
+      window._themeRGB = _t.glow1;
+    }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: transparent;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(120,0,255,0.35), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(0,170,255,0.25), transparent 30%),
+        #0d0d0d;
+      z-index: -1;
+    }
+
+    header {
+      padding: 140px 20px 40px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 900;
+      letter-spacing: -3px;
+      color: #ffffff;
+      text-shadow:
+        0 0 10px rgba(var(--glow1, 168,85,247),0.9),
+        0 0 25px rgba(var(--glow1, 168,85,247),0.6),
+        0 0 40px rgba(var(--glow2, 56,189,248),0.4);
+      position: relative;
+      display: inline-block;
+      animation: floatTitle 3.5s ease-in-out infinite;
+    }
+
+    header h1::before {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(circle, rgba(var(--glow1, 168,85,247),0.35), transparent 60%);
+      filter: blur(20px);
+      z-index: -1;
+      border-radius: 999px;
+    }
+
+    @keyframes floatTitle {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    header p {
+      margin-top: 18px;
+      color: #bdbdbd;
+      font-size: 1.1rem;
+    }
+
+    .container {
+      width: min(1400px, 92%);
+      margin: auto;
+      padding-bottom: 80px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-auto-rows: 1fr;
+      gap: 24px;
+    }
+
+    /* ── FIXED: cards are now flex columns so buttons always sit at the bottom ── */
+    .card {
+      cursor: pointer;
+      background: rgba(10,10,20,0.55);
+      border: 1px solid rgba(var(--clr-a-raw, 168,85,247),0.35);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 24px;
+      transition: 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 0 15px rgba(var(--glow1, 168,85,247),0.15),
+        0 0 30px rgba(var(--glow2, 56,189,248),0.08);
+
+      /* flexbox to push button to bottom */
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      top: -35px;
+      right: -35px;
+      border-radius: 50%;
+      background: 
+        radial-gradient(circle, rgba(168,85,247,0.95) 0%, rgba(168,85,247,0.55) 45%, transparent 70%),
+        repeating-conic-gradient(
+          rgba(var(--glow1, 168,85,247),0.9) 0deg 6deg,
+          transparent 6deg 30deg
+        );
+      z-index: 0;
+      opacity: 0.95;
+    }
+
+    .card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: rgba(var(--glow1, 168,85,247),0.6);
+      box-shadow: 0 15px 40px rgba(var(--glow1, 168,85,247),0.15);
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+      color: #ffffff;
+      text-shadow:
+        0 0 8px rgba(168,85,247,0.7),
+        0 0 18px rgba(var(--glow2, 56,189,248),0.4);
+    }
+
+    .card p {
+      color: #c9c9c9;
+      line-height: 1.5;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+      /* grow to fill space so button is always at the bottom */
+      flex: 1;
+    }
+
+    .card a {
+      display: inline-block;
+      text-decoration: none;
+      background: linear-gradient(90deg, var(--clr-a, #a855f7), var(--clr-b, #38bdf8));
+      color: white;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: 0.2s ease;
+      position: relative;
+      z-index: 1;
+      align-self: flex-start;
+    }
+
+    .card a:hover {
+      opacity: 0.85;
+      transform: scale(1.03);
+    }
+
+    .pop {
+      animation: popAnim 0.18s ease;
+    }
+
+    @keyframes popAnim {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(0.92); }
+      100% { transform: scale(1); }
+    }
+
+    .float-dots {
+      display: inline-block;
+      margin-left: 6px;
+      animation: floatDots 1.6s ease-in-out infinite;
+    }
+
+    @keyframes floatDots {
+      0%   { transform: translateY(0px); opacity: 0.6; }
+      50%  { transform: translateY(-4px); opacity: 1; }
+      100% { transform: translateY(0px); opacity: 0.6; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #888;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    @media (max-width: 700px) {
+      header { padding-top: 120px; }
+      .card  { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="announcement">
+    <span>⚠️ Heads up — websites may go down soon due to Bunny.net costs. Apologies in advance!</span>
+    <button id="announceClose">✕</button>
+  </div>
+
+  <style>
+    #announcement {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 99999;
+      background: linear-gradient(90deg, var(--clr-a,#a855f7), var(--clr-b,#38bdf8));
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 50px 10px 20px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #announceClose {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: 0.2s;
+    }
+
+    #announceClose:hover { opacity: 1; }
+
+    /* Push everything down when banner is visible */
+    body.has-announcement .floatingBar { top: 52px; }
+    body.has-announcement header { padding-top: 160px; }
+  </style>
+
+  <script>
+    if (!sessionStorage.getItem('announceDismissed')) {
+      document.body.classList.add('has-announcement');
+    } else {
+      document.getElementById('announcement').style.display = 'none';
+    }
+
+    document.getElementById('announceClose').addEventListener('click', () => {
+      document.getElementById('announcement').style.display = 'none';
+      document.body.classList.remove('has-announcement');
+      sessionStorage.setItem('announceDismissed', 'true');
+    });
+  </script>
+
+  <div class="floatingBar">
+    <div class="pill">
+      <div class="links">
+        <a href="/" class="active">
+          <span class="label">Home</span>
+          <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" d="M4 19v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.588 1.413T18 21h-3q-.425 0-.712-.288T14 20v-5q0-.425-.288-.712T13 14h-2q-.425 0-.712.288T10 15v5q0 .425-.288.713T9 21H6q-.825 0-1.412-.587T4 19"/></svg></span>
+        </a>
+        <a href="/Xfun2_settings.html">
+          <span class="label">Settings</span>
+          <span class="icon">⚙</span>
+        </a>
+        <a href="/Xfun2_more.html">
+          <span class="label">More</span>
+          <span class="icon">+</span>
+        </a>
+        <a href="/Xfun2_bookmarklets.html">
+          <span class="label">Bookmarklets</span>
+          <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="0.75em" height="1em" viewBox="0 0 384 512"><path d="M0 0h384v512H0z" fill="none"/><path fill="currentColor" d="M0 512V48C0 21.49 21.49 0 48 0h288c26.51 0 48 21.49 48 48v464L192 400z"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .floatingBar {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      padding: 16px 26px;
+      border-radius: 999px;
+      background: rgba(15,15,25,0.55);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(var(--glow1,168,85,247),0.25);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      width: min(1400px, 96vw);
+    }
+
+    .links {
+      display: flex;
+      gap: 26px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .links a {
+      text-decoration: none;
+      color: #ddd;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 16px;
+      transition: 0.2s ease;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      min-width: unset;
+    }
+
+    .links a .label { font-size: 17px; font-weight: 700; }
+    .links a .icon  { font-size: 20px; line-height: 1; opacity: 0.9; }
+
+    .links a:hover, .links a.active {
+      background: rgba(var(--glow1,168,85,247),0.2);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    body.has-announcement .floatingBar { top: 52px; }
+    body.has-announcement header { padding-top: 160px; }
+
+    @media (max-width: 768px) {
+      .pill  { padding: 12px 14px; }
+      .links { gap: 14px; }
+      .links a { font-size: 12px; padding: 6px 10px; }
+    }
+  </style>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <style>
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: #0d0d0d;
+    }
+  </style>
+
+  <script>
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let w, h;
+    function resize() {
+      w = canvas.width  = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let scrollOffset = 0;
+    window.addEventListener('scroll', () => { scrollOffset = window.scrollY; });
+
+    const mouse = { x: w/2, y: h/2 };
+    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    const dots = Array.from({length: 70}, () => ({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      vx: (Math.random()-0.5)*1.4,
+      vy: (Math.random()-0.5)*1.4,
+      r: Math.random()*3.5 + 2
+    }));
+
+    const scrollFactor = 0.15;
+
+    function draw() {
+      ctx.clearRect(0,0,w,h);
+
+      for (let i = 0; i < dots.length; i++) {
+        for (let j = i+1; j < dots.length; j++) {
+          const a = dots[i], b = dots[j];
+          const ax = a.x, ay = a.y - scrollOffset * scrollFactor;
+          const bx = b.x, by = b.y - scrollOffset * scrollFactor;
+          const dx = ax-bx, dy = ay-by;
+          const dist = Math.sqrt(dx*dx+dy*dy);
+          if (dist < 160) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(' + (window._themeRGB || '168,85,247') + ',' + (1 - dist/160)*0.4 + ')';
+            ctx.lineWidth = 1;
+            ctx.moveTo(ax, ay);
+            ctx.lineTo(bx, by);
+            ctx.stroke();
+          }
+        }
+      }
+
+      for (const d of dots) {
+        const dx = d.x - mouse.x;
+        const dy = (d.y - scrollOffset * scrollFactor) - mouse.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+
+        if (dist < 140 && dist > 0) {
+          const force = (140 - dist) / 140;
+          d.vx += (dx / dist) * force * 0.03;
+          d.vy += (dy / dist) * force * 0.03;
+        }
+
+        d.vx += (Math.random()-0.5) * 0.03;
+        d.vy += (Math.random()-0.5) * 0.03;
+        d.x  += d.vx;
+        d.y  += d.vy;
+        d.vx *= 0.995;
+        d.vy *= 0.995;
+
+        if (d.x < 0 || d.x > w) d.vx *= -1;
+        if (d.y < 0 || d.y > h) d.vy *= -1;
+
+        const dy2   = d.y - scrollOffset * scrollFactor;
+        const time   = performance.now() * 0.002;
+        const spikes = 6;
+        const outer  = d.r + 2;
+        const inner  = d.r * 0.55;
+
+        ctx.save();
+        ctx.translate(d.x, dy2);
+        ctx.rotate(time + (d.vx + d.vy) * 2);
+        ctx.beginPath();
+
+        for (let i = 0; i < spikes*2; i++) {
+          const angle  = (i * Math.PI) / spikes;
+          const radius = i % 2 === 0 ? outer : inner;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+
+        ctx.closePath();
+        ctx.fillStyle = window._themeA || 'rgba(168,85,247,0.95)';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+
+  <header>
+    <h1 id="title">Xfun2</h1>
+    <p>Kanawha County School Website UBG</p>
+  </header>
+
+  <style>
+    #title span {
+      display: inline-block;
+      transition: transform 0.25s ease;
+      will-change: transform;
+    }
+  </style>
+
+  <script>
+    const title = document.getElementById('title');
+    const text  = title.textContent;
+    title.innerHTML = '';
+
+    const letters = [...text].map((char) => {
+      const s = document.createElement('span');
+      s.textContent = char;
+      title.appendChild(s);
+      return s;
+    });
+
+    title.addEventListener('mousemove', (e) => {
+      const rect     = title.getBoundingClientRect();
+      const x        = e.clientX - rect.left;
+      const strength = 18;
+
+      letters.forEach((el, i) => {
+        const charCenter = (rect.width / letters.length) * i;
+        const diff = charCenter - x;
+        const dist = diff / rect.width;
+        el.style.transform = `translateY(${-Math.abs(dist) * 6}px) translateX(${dist * strength}px)`;
+      });
+    });
+
+    title.addEventListener('mouseleave', () => {
+      letters.forEach(el => { el.style.transform = 'translate(0,0)'; });
+    });
+  </script>
+
+  <main class="container">
+
+    <!-- Rotating banner tip -->
+    <div id="tipBanner">
+      <span id="tipBannerIcon">💡</span>
+      <span id="tipBannerText"></span>
+    </div>
+
+    <section class="grid">
+
+      <div class="card">
+        <h2>Cine-Clever</h2>
+        <p>Cine Cloud</p>
+        <span class="card-tip">🎮 Play games like GTA, Forza & more</span>
+        <a href="https://Cine-Clever.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>CleverCanvas</h2>
+        <p>Peak Proxy</p>
+        <span class="card-tip">🕵️ Browse under the radar.</span>
+        <a href="https://CleverCanvas.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>CleverLearning</h2>
+        <p>Lunaar Proxy</p>
+        <span class="card-tip">🌙 Slip past filters, stay unseen.</span>
+        <a href="https://CleverLearning.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>CleverMCGRAW</h2>
+        <p>Xylora Proxy</p>
+        <span class="card-tip">🔮 Your secret route to the web.</span>
+        <a href="https://CleverMCGRAW.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>ColdClever</h2>
+        <p>Everest Proxy</p>
+        <span class="card-tip">🏔️ Stay hidden, browse freely.</span>
+        <a href="https://ColdClever.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>Fern-Learning</h2>
+        <p>Fern Proxy</p>
+        <span class="card-tip">🌿 Fly under the radar.</span>
+        <a href="https://Fern-Learning.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>Kanawha-county-schools</h2>
+        <p>Petezah Proxy</p>
+        <span class="card-tip">🏫 Access blocked? Not anymore.</span>
+        <a href="https://Kanawha-county-schools.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>kanawha-schoology-login</h2>
+        <p>Frogies Arcade</p>
+        <span class="card-tip">🐸 Games galore, no limits.</span>
+        <a href="https://kanawha-schoology-login.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>Login-Schoology</h2>
+        <p>Solo Central Proxy</p>
+        <span class="card-tip">🔑 Your key to the open web.</span>
+        <a href="https://Login-Schoology.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>MyClever</h2>
+        <p>Nautilis OS</p>
+        <span class="card-tip">🌊 Full OS-style proxy experience</span>
+        <a href="https://MyClever.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>ProdigyEnglish</h2>
+        <p>Broken atm -Nate</p>
+        <span class="card-tip">⚠️ Currently down, check back later</span>
+        <a href="https://ProdigyEnglish.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>Schoology-Login</h2>
+        <p>Hypackel</p>
+        <span class="card-tip">🎮 Every game imaginable.</span>
+        <a href="https://Schoology-Login.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>SchoologyMissing</h2>
+        <p>StarLight Proxy</p>
+        <span class="card-tip">⭐ When others fail, this one shines.</span>
+        <a href="https://SchoologyMissing.b-cdn.net" target="_blank">Visit Site</a>
+      </div>
+
+      <div class="card">
+        <h2>Coming Soon<span class="float-dots">...</span></h2>
+        <p>More sites are being built.</p>
+        <span class="card-tip">🔜 Check back later for more websites.</span>
+        <a href="#" onclick="return false;">Coming Soon</a>
+      </div>
+
+      <div class="card">
+        <h2>Coming Soon<span class="float-dots">...</span></h2>
+        <p>More sites are being built.</p>
+        <span class="card-tip">🔜 Check back later for more websites.</span>
+        <a href="#" onclick="return false;">Coming Soon</a>
+      </div>
+
+    </section>
+  </main>
+
+  <style>
+    /* ── Rotating banner tip ── */
+    #tipBanner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(10,10,20,0.55);
+      border: 1px solid rgba(var(--glow1,168,85,247),0.35);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 12px 20px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #ccc;
+      min-height: 46px;
+      transition: opacity 0.4s ease;
+    }
+
+    #tipBannerIcon { font-size: 18px; flex-shrink: 0; }
+    #tipBannerText { font-weight: 500; }
+
+    /* ── Card tips ── */
+    .card-tip {
+      display: block;
+      font-size: 12px;
+      color: rgba(var(--glow1,168,85,247),0.9);
+      margin-bottom: 10px;
+      font-style: italic;
+      position: relative;
+      z-index: 1;
+      transition: opacity 0.3s;
+    }
+
+    body.tips-off #tipBanner  { display: none; }
+    body.tips-off .card-tip   { display: none; }
+
+    /* ── First visit popup ── */
+    #tipPopup {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    #tipPopupBox {
+      background: rgba(10,10,20,0.95);
+      border: 1px solid rgba(var(--glow1,168,85,247),0.45);
+      border-radius: 24px;
+      padding: 36px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(var(--glow1,168,85,247),0.2);
+    }
+
+    #tipPopupBox h2 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 16px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(var(--glow1,168,85,247),0.8);
+    }
+
+    #tipPopupBox ul {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #tipPopupBox ul li {
+      color: #ccc;
+      font-size: 14px;
+      line-height: 1.5;
+      padding-left: 4px;
+    }
+
+    #tipPopupClose {
+      background: linear-gradient(90deg, var(--clr-a,#a855f7), var(--clr-b,#38bdf8));
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    #tipPopupClose:hover { opacity: 0.85; transform: scale(1.03); }
+  </style>
+
+  <!-- First visit popup -->
+  <div id="tipPopup" style="display:none;">
+    <div id="tipPopupBox">
+      <h2>👋 Welcome to Xfun2!</h2>
+      <ul>
+        <li>🔗 Click <strong>Visit Site</strong> on any card to open a proxy</li>
+        <li>⚙️ Head to <strong>Settings</strong> to change your theme & more</li>
+        <li>🎨 Pick a color theme that suits you</li>
+        <li>🫣 Enable <strong>Tab Cloak</strong> to hide the URL bar</li>
+        <li>💡 Toggle tips on/off anytime in Settings</li>
+      </ul>
+      <button id="tipPopupClose">Got it!</button>
+    </div>
+  </div>
+
+  <script>
+    const bannerTips = [
+      '🔜 Check back later for more websites!',
+      '🎨 You can change the color theme in Settings',
+      '⚡ Try multiple proxies if one is slow or blocked',
+      '⭐ StarLight is a great backup if others are slow',
+      '🌙 Turn off particles in Settings for better performance',
+      '🐸 Frogies Arcade has games built in!',
+      '🔑 Multiple proxy options available if one is down',
+    ];
+
+    let bannerIndex = 0;
+
+    function rotateBanner() {
+      const el = document.getElementById('tipBannerText');
+      if (!el) return;
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.textContent = bannerTips[bannerIndex % bannerTips.length];
+        el.style.opacity = '1';
+        bannerIndex++;
+      }, 400);
+    }
+
+    rotateBanner();
+    setInterval(rotateBanner, 5000);
+
+    // First visit popup
+    if (!localStorage.getItem('visited') && localStorage.getItem('tips') !== 'false') {
+      document.getElementById('tipPopup').style.display = 'flex';
+      localStorage.setItem('visited', 'true');
+    }
+
+    document.getElementById('tipPopupClose').addEventListener('click', () => {
+      document.getElementById('tipPopup').style.display = 'none';
+    });
+
+    // Apply tips setting on load
+    if (localStorage.getItem('tips') === 'false') {
+      document.body.classList.add('tips-off');
+    }
+  </script>
+
+  <!-- Docs toggle button -->
+  <div style="text-align:center; margin: 0 0 40px;">
+    <button id="docsToggleBtn">📖 View Docs</button>
+  </div>
+
+  <style>
+    #docsToggleBtn {
+      background: rgba(10,10,20,0.55);
+      border: 1px solid rgba(var(--glow1,168,85,247),0.35);
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      backdrop-filter: blur(12px);
+    }
+    #docsToggleBtn:hover {
+      background: rgba(var(--glow1,168,85,247),0.2);
+      transform: translateY(-2px);
+    }
+  </style>
+
+  <script>
+    document.getElementById('docsToggleBtn').addEventListener('click', () => {
+      const docs = document.getElementById('docsSection');
+      const btn  = document.getElementById('docsToggleBtn');
+      const open = docs.style.display === 'block';
+      docs.style.display = open ? 'none' : 'block';
+      btn.textContent = open ? '📖 View Docs' : '📖 Hide Docs';
+    });
+  </script>
+
+  <!-- Docs Section -->
+  <div id="docsSection" style="display:none;">
+  <div class="docs-wrap">
+    <div class="docs-container">
+
+      <div class="docs-sidebar">
+        <div class="docs-sidebar-title">Xfun2</div>
+        <ul class="docs-nav">
+          <li class="docs-nav-group">Getting Started</li>
+          <li><a href="#what-is-xfun2">What is Xfun2?</a></li>
+          <li><a href="#how-to-use">How to Use</a></li>
+          <li class="docs-nav-group">Proxies</li>
+          <li><a href="#what-is-proxy">What is a Proxy?</a></li>
+          <li><a href="#proxy-list">Proxy List</a></li>
+          <li class="docs-nav-group">Settings</li>
+          <li><a href="#tab-cloak">Tab Cloak</a></li>
+          <li><a href="#themes">Themes</a></li>
+          <li><a href="#particles">Particles</a></li>
+          <li><a href="#tips">Tips</a></li>
+          <li class="docs-nav-group">More</li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#credits">Credits</a></li>
+        </ul>
+      </div>
+
+      <div class="docs-content">
+
+        <h1 class="docs-title">Xfun2 Docs <a class="docs-anchor" href="#top">¶</a></h1>
+        <p class="docs-lead">Xfun2 is a free web hub for Kanawha County students — packed with proxies, games, and tools to help you browse freely and have fun.</p>
+
+        <div class="docs-badges">
+          <a class="docs-badge" href="/Xfun2_settings.html">⚙️ Settings</a>
+        </div>
+
+        <h2 id="what-is-xfun2">What is Xfun2? <a class="docs-anchor" href="#what-is-xfun2">¶</a></h2>
+        <p>Xfun2 is a student-built website hub designed to give you access to proxies, games, and tools — all in one place, right from your browser.</p>
+
+        <h2 id="how-to-use">How to Use <a class="docs-anchor" href="#how-to-use">¶</a></h2>
+        <ul class="docs-list">
+          <li>🔗 Click <strong>Visit Site</strong> on any card to open a proxy or tool</li>
+          <li>⚙️ Head to <strong>Settings</strong> to customize your experience</li>
+          <li>🎨 Pick a color theme that suits you</li>
+          <li>💡 Enable tips to get hints about each site</li>
+          <li>🫣 Use Tab Cloak to hide what you're doing</li>
+        </ul>
+
+        <h2 id="what-is-proxy">What is a Proxy? <a class="docs-anchor" href="#what-is-proxy">¶</a></h2>
+        <p>A proxy is a middleman server that fetches web content on your behalf — making it look like the request came from somewhere else. This lets you access sites that may be blocked on your network.</p>
+
+        <h2 id="proxy-list">Proxy List <a class="docs-anchor" href="#proxy-list">¶</a></h2>
+        <ul class="docs-list">
+          <li>🎮 <strong>Cine-Clever</strong> — Play games like GTA, Forza & more</li>
+          <li>🕵️ <strong>CleverCanvas</strong> — Browse under the radar</li>
+          <li>🌙 <strong>CleverLearning</strong> — Slip past filters, stay unseen</li>
+          <li>🔮 <strong>CleverMCGRAW</strong> — Your secret route to the web</li>
+          <li>🏔️ <strong>ColdClever</strong> — Stay hidden, browse freely</li>
+          <li>🌿 <strong>Fern-Learning</strong> — Fly under the radar</li>
+          <li>🏫 <strong>Kanawha-county-schools</strong> — Access blocked? Not anymore</li>
+          <li>🐸 <strong>kanawha-schoology-login</strong> — Games galore, no limits</li>
+          <li>🔑 <strong>Login-Schoology</strong> — Your key to the open web</li>
+          <li>🌊 <strong>MyClever</strong> — Full OS-style proxy experience</li>
+          <li>⚠️ <strong>ProdigyEnglish</strong> — Currently down, check back later</li>
+          <li>🎮 <strong>Schoology-Login</strong> — Every game imaginable</li>
+          <li>⭐ <strong>SchoologyMissing</strong> — When others fail, this one shines</li>
+        </ul>
+
+        <h2 id="tab-cloak">Tab Cloak <a class="docs-anchor" href="#tab-cloak">¶</a></h2>
+        <p>Tab Cloak opens sites inside an <code>about:blank</code> tab so the URL bar looks empty to anyone glancing at your screen. Toggle it in <a href="/Xfun2_settings.html">Settings</a>. Note: depends on your browser.</p>
+
+        <h2 id="themes">Themes <a class="docs-anchor" href="#themes">¶</a></h2>
+        <p>Xfun2 has 12 built-in color themes that change every colored element on the site — glows, borders, buttons, particles, and more. Pick your favorite in <a href="/Xfun2_settings.html">Settings</a>.</p>
+
+        <h2 id="particles">Particles <a class="docs-anchor" href="#particles">¶</a></h2>
+        <p>The animated star dots and constellation lines in the background can be toggled off in Settings if you prefer a cleaner look or better performance on older devices.</p>
+
+        <h2 id="tips">Tips <a class="docs-anchor" href="#tips">¶</a></h2>
+        <p>Tips include a rotating banner at the top of the page, small hints on each card, and a welcome popup on your first visit. Toggle them on or off in <a href="/Xfun2_settings.html">Settings</a>.</p>
+
+        <h2 id="faq">FAQ <a class="docs-anchor" href="#faq">¶</a></h2>
+        <ul class="docs-list">
+          <li><strong>A site is down — what do I do?</strong> Try a different proxy from the list. Most do the same thing.</li>
+          <li><strong>Tab Cloak isn't working.</strong> It depends on your browser. Try Chrome or Firefox.</li>
+          <li><strong>Can I suggest a new proxy?</strong> More sites are coming soon — check back later!</li>
+          <li><strong>Is this safe to use?</strong> Use at your own risk. Proxies are not 100% anonymous.</li>
+        </ul>
+
+        <h2 id="credits">Credits <a class="docs-anchor" href="#credits">¶</a></h2>
+        <ul class="docs-list">
+          <li>🛠️ Built by <strong>-N8TE</strong></li>
+          <li>🎨 Design inspired by modern proxy hubs</li>
+          <li>© 2026 Xfun2</li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+  </div> <!-- end docsSection -->
+
+  <style>
+    .docs-wrap {
+      background: rgba(5,5,15,0.8);
+      border-top: 1px solid rgba(var(--glow1,168,85,247),0.25);
+      padding: 60px 0 80px;
+      margin-top: 40px;
+    }
+
+    .docs-container {
+      width: min(1100px, 92%);
+      margin: auto;
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    .docs-sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 90px;
+    }
+
+    .docs-sidebar-title {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 16px;
+      text-shadow: 0 0 10px rgba(var(--glow1,168,85,247),0.7);
+      letter-spacing: 1px;
+    }
+
+    .docs-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .docs-nav li.docs-nav-group {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(var(--glow1,168,85,247),0.8);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 14px;
+      margin-bottom: 2px;
+    }
+
+    .docs-nav a {
+      text-decoration: none;
+      color: #999;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      display: block;
+      transition: 0.2s ease;
+    }
+
+    .docs-nav a:hover {
+      color: #fff;
+      background: rgba(var(--glow1,168,85,247),0.15);
+    }
+
+    .docs-content { flex: 1; min-width: 0; }
+
+    .docs-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 12px;
+      text-shadow: 0 0 15px rgba(var(--glow1,168,85,247),0.6);
+    }
+
+    .docs-lead {
+      color: #bbb;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .docs-badges { display: flex; gap: 10px; margin-bottom: 36px; flex-wrap: wrap; }
+
+    .docs-badge {
+      text-decoration: none;
+      background: linear-gradient(90deg, var(--clr-a,#a855f7), var(--clr-b,#38bdf8));
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      transition: 0.2s ease;
+    }
+
+    .docs-badge:hover { opacity: 0.8; transform: translateY(-2px); }
+
+    .docs-content h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 36px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(var(--glow1,168,85,247),0.2);
+      text-shadow: 0 0 10px rgba(var(--glow1,168,85,247),0.4);
+    }
+
+    .docs-content p {
+      color: #bbb;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .docs-content p a, .docs-list li a {
+      color: var(--clr-a,#a855f7);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .docs-content p a:hover, .docs-list li a:hover { text-decoration: underline; }
+
+    .docs-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .docs-list li {
+      color: #bbb;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(var(--glow1,168,85,247),0.15);
+      border-radius: 10px;
+    }
+
+    .docs-anchor {
+      color: rgba(var(--glow1,168,85,247),0.5);
+      text-decoration: none;
+      font-size: 0.8em;
+      margin-left: 6px;
+    }
+
+    .docs-anchor:hover { color: var(--clr-a,#a855f7); }
+
+    code {
+      background: rgba(var(--glow1,168,85,247),0.15);
+      color: var(--clr-a,#a855f7);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: monospace;
+    }
+
+    @media (max-width: 700px) {
+      .docs-container { flex-direction: column; }
+      .docs-sidebar { width: 100%; position: static; }
+    }
+  </style>
+
+  <div id="secretTag">-N8TE</div>
+  <button id="themeToggle">☀️</button>
+
+  <style>
+    #secretTag {
+      position: fixed;
+      bottom: 10px;
+      right: 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+      font-family: monospace;
+      z-index: 9999;
+      user-select: none;
+    }
+
+    #themeToggle {
+      position: fixed;
+      bottom: 18px;
+      left: 18px;
+      z-index: 10000;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    body.light-mode { background: #f5f7ff; color: #111; }
+    body.light-mode header h1 { color: #111; text-shadow: none; }
+    body.light-mode header p  { color: #333; }
+    body.light-mode .card     { background: rgba(255,255,255,0.8); border: 1px solid rgba(0,0,0,0.1); }
+    body.light-mode .card h2  { color: #111; text-shadow: none; }
+    body.light-mode .card p   { color: #333; }
+    body.light-mode footer    { color: #444; border-top: 1px solid rgba(0,0,0,0.1); }
+  </style>
+
+  <script>
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      document.getElementById('themeToggle').textContent =
+        document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+    });
+  </script>
+
+  <style>
+    .ripple {
+      position: fixed;
+      border-radius: 999px;
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+      border: 2px solid rgba(var(--glow1, 168,85,247),0.6);
+      animation: rippleAnim 0.7s ease-out forwards;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes rippleAnim {
+      0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+      60%  { opacity: 0.4; }
+      100% { transform: translate(-50%, -50%) scale(6); opacity: 0; }
+    }
+  </style>
+
+  <script>
+    function spawnRipple(x, y) {
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      const size = Math.random() * 40 + 60;
+      ripple.style.width  = size + 'px';
+      ripple.style.height = size + 'px';
+      ripple.style.left   = x + 'px';
+      ripple.style.top    = y + 'px';
+      document.body.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 800);
+    }
+
+    document.addEventListener('click',      (e) => spawnRipple(e.clientX, e.clientY));
+    document.addEventListener('touchstart', (e) => { const t = e.touches[0]; if (t) spawnRipple(t.clientX, t.clientY); }, { passive: true });
+    document.addEventListener('keydown',    (e) => { if (e.key === ' ' || e.key === 'Enter') spawnRipple(window.innerWidth/2, window.innerHeight/2); });
+  </script>
+
+  <div id="lightPreview"></div>
+
+  <style>
+    #lightPreview {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      background: radial-gradient(circle at var(--mx,50vw) var(--my,50vh), rgba(255,255,255,0.9), transparent 25%);
+    }
+
+    body.light-preview #lightPreview { opacity: 1; }
+    body.light-mode #lightPreview    { background: radial-gradient(circle at var(--mx,50vw) var(--my,50vh), rgba(0,0,0,0.85), transparent 25%); }
+  </style>
+
+  <script>
+    const toggleBtn = document.getElementById('themeToggle');
+    const preview   = document.getElementById('lightPreview');
+    let moveHandler = null;
+
+    toggleBtn.addEventListener('mouseenter', () => {
+      document.body.classList.add('light-preview');
+      moveHandler = (e) => {
+        preview.style.setProperty('--mx', e.clientX + 'px');
+        preview.style.setProperty('--my', e.clientY + 'px');
+      };
+      window.addEventListener('mousemove', moveHandler);
+    });
+
+    toggleBtn.addEventListener('mouseleave', () => {
+      document.body.classList.remove('light-preview');
+      if (moveHandler) { window.removeEventListener('mousemove', moveHandler); moveHandler = null; }
+    });
+  </script>
+
+  <script>
+    // Apply particles setting on load
+    if (localStorage.getItem('particles') === 'false') {
+      document.getElementById('bgCanvas').style.opacity = '0';
+    }
+  </script>
+
+  <script>
+    // Tab cloak: if enabled in settings, open links in an about:blank popup
+    document.querySelectorAll('.card a[href^="http"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        if (localStorage.getItem('tabCloak') === 'true') {
+          e.preventDefault();
+          const blank = window.open('about:blank', '_blank');
+          const iframe = blank.document.createElement('iframe');
+          iframe.src = link.href;
+          iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:none;margin:0;padding:0;';
+          blank.document.body.style.cssText = 'margin:0;padding:0;overflow:hidden;';
+          blank.document.body.appendChild(iframe);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
